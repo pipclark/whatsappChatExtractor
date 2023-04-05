@@ -1,11 +1,12 @@
-from controller import DataLoader
+from controller import Controller
 
 if __name__ == '__main__':
-    dataLoader = DataLoader('tests/test_data/WhatsApp Chat.txt')
+    controller = Controller('tests/test_data/WhatsApp Chat.txt')
+    controller.print_chat_sample()
 
-    messages_df = dataLoader.load_whatsapp_text_file()
 
-    print(messages_df)
+
+
 
 
 
