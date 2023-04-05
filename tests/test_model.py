@@ -22,6 +22,11 @@ class TestWhatsappMessages(TestCase):
                          ]
              })
 
+        self.expected_stats = pd.DataFrame(
+            {'Name': ['Blob', 'Alice'],
+             'Frequency': [1, 1]}
+        )
+
     def test_load_whatsapp_text_file_success(self):
         whatsappMessages = WhatsappMessageLoader('test_data/WhatsApp Chat.txt')
 
@@ -39,8 +44,30 @@ class TestWhatsappMessages(TestCase):
         key = 'https://open.spotify.com'
         whatsappMessageLoader = WhatsappMessageLoader('test_data/Music Chat.txt')
 
-        whatsappMessages = WhatsappMessages(whatsappMessageLoader.load_whatsapp_text_file(), key)
+        whatsappMessages = WhatsappMessages(whatsappMessageLoader.load_whatsapp_text_file(), key, '')
         key_messages = whatsappMessages.extract_key_messages()
 
         pd.testing.assert_frame_equal(key_messages, self.expected_key_result)
+
+    def test_extract_messages_with_two_keys(self):
+        key = 'https://open.spotify.com'
+        key_2 = 'Anyway'
+        whatsappMessageLoader = WhatsappMessageLoader('test_data/Music Chat.txt')
+
+        whatsappMessages = WhatsappMessages(whatsappMessageLoader.load_whatsapp_text_file(), key, key_2)
+        key_messages = whatsappMessages.extract_two_key_messages()
+        pd.testing.assert_frame_equal(key_messages, self.expected_key_result[self.expected_key_result['Message']
+                                      .str.contains('Anyway')])
+
+
+    def test_create_statistics_who_sent_key_messages(self):
+        key = 'https://open.spotify.com'
+        whatsappMessageLoader = WhatsappMessageLoader('test_data/Music Chat.txt')
+        whatsappMessages = WhatsappMessages(whatsappMessageLoader.load_whatsapp_text_file(), key, '')
+
+        stats = whatsappMessages.create_statistics_on_who_sent_key_messages()
+        print(stats)
+        pd.testing.assert_frame_equal(stats, self.expected_stats)
+
+
 

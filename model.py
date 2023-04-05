@@ -52,14 +52,27 @@ class WhatsappMessageLoader:
             df = pd.DataFrame(data, columns=['Date', 'Time', 'Name', 'Message'])
             return df
 
+
 class WhatsappMessages:
-    def __init__(self, messages_df, key: str):
+    def __init__(self, messages_df, key: str, key_2: str = ''):
         self.key = key
+        self.key_2 = key_2
         self.messages_df = messages_df
 
     def extract_key_messages(self):
         filtered_messages = self.messages_df[self.messages_df['Message'].str.contains(self.key)].reset_index(drop=True)
         return filtered_messages
 
+    def extract_two_key_messages(self):
+        filtered_messages = self.messages_df[self.messages_df['Message'].str.contains(self.key) &
+                                             self.messages_df['Message'].str.contains(self.key_2)] \
+            .reset_index(drop=True)
+        return filtered_messages
 
-
+    def create_statistics_on_who_sent_key_messages(self):
+        messages = self.extract_key_messages()
+        stats = messages['Name'].value_counts()
+        stats_df = stats.to_frame().reset_index()
+        stats_df.columns = ['Name', 'Frequency']
+        print(stats)
+        return stats_df
