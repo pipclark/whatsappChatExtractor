@@ -3,7 +3,7 @@ import pandas as pd
 import re
 
 
-class WhatsappMessages:
+class WhatsappMessageLoader:
     def __init__(self, whatsapp_conversation_filepath):
         self.data = None
         self.whatsapp_conversation_filepath = whatsapp_conversation_filepath
@@ -51,6 +51,15 @@ class WhatsappMessages:
             # Convert the data to a DataFrame and set the column names
             df = pd.DataFrame(data, columns=['Date', 'Time', 'Name', 'Message'])
             return df
+
+class WhatsappMessages:
+    def __init__(self, messages_df, key: str):
+        self.key = key
+        self.messages_df = messages_df
+
+    def extract_key_messages(self):
+        filtered_messages = self.messages_df[self.messages_df['Message'].str.contains(self.key)].reset_index(drop=True)
+        return filtered_messages
 
 
 
